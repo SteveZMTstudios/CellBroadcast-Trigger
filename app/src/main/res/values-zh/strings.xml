@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">无线警报测试</string>
+    <string name="app_title">无线紧急警报触发器</string>
+    <string name="alert_message_label">警报内容</string>
+    <string name="default_message">这是一条测试紧急警报</string>
+    <string name="alert_level_label">警报等级：</string>
+    <string name="delay_label">延迟 (秒)</string>
+    <string name="trigger_button">触发警报 (ROOT)</string>
+    <string name="settings_button">打开 WEA 设置</string>
+    <string name="copy_logs_button">复制日志</string>
+    <string name="logs_label">日志：</string>
+    <string name="log_starting">开始触发...\n</string>
+    <string name="toast_copied">日志已复制到剪贴板</string>
+
+    <string name="level_presidential">总统级 (Presidential)</string>
+    <string name="level_extreme">极端 (Extreme)</string>
+    <string name="level_severe">严重 (Severe)</string>
+    <string name="level_amber">安珀 (Amber)</string>
+    <string name="level_test">测试 (Test)</string>
+    
+    <string name="etws_earthquake">ETWS: 地震</string>
+    <string name="etws_tsunami">ETWS: 海啸</string>
+    <string name="etws_earthquake_tsunami">ETWS: 地震+海啸</string>
+    <string name="etws_test">ETWS: 测试</string>
+    <string name="etws_other">ETWS: 其他</string>
+
+    <string name="warning_title">警告</string>
+    <string name="warning_message">在公共场所触发此测试应用的特殊提示音，可能被误认为真实紧急情况并引发不必要的恐慌。请务必仅在私人环境中负责任地使用。</string>
+    <string name="warning_confirm">我已知晓</string>
+</resources>

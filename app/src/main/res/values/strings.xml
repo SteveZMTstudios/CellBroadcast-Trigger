@@ -1,3 +1,30 @@
 <resources>
-    <string name="app_name">无线警报测试</string>
+    <string name="app_name">CellBroadcast Trigger</string>
+    <string name="app_title">Wireless Emergency Alert Trigger</string>
+    <string name="alert_message_label">Alert Message</string>
+    <string name="default_message">This is a test Emergency Alert</string>
+    <string name="alert_level_label">Alert Level:</string>
+    <string name="delay_label">Delay (seconds)</string>
+    <string name="trigger_button">TRIGGER ALERT (ROOT)</string>
+    <string name="settings_button">Open WEA Settings</string>
+    <string name="copy_logs_button">Copy Logs</string>
+    <string name="logs_label">Logs:</string>
+    <string name="log_starting">Starting trigger...\n</string>
+    <string name="toast_copied">Logs copied to clipboard</string>
+
+    <string name="level_presidential">Presidential</string>
+    <string name="level_extreme">Extreme</string>
+    <string name="level_severe">Severe</string>
+    <string name="level_amber">Amber</string>
+    <string name="level_test">Test</string>
+    
+    <string name="etws_earthquake">ETWS: Earthquake</string>
+    <string name="etws_tsunami">ETWS: Tsunami</string>
+    <string name="etws_earthquake_tsunami">ETWS: Earthquake+Tsunami</string>
+    <string name="etws_test">ETWS: Test</string>
+    <string name="etws_other">ETWS: Other</string>
+    
+    <string name="warning_title">Warning</string>
+    <string name="warning_message">Triggering the distinctive alert tone from this test app in public places may be mistaken for a real emergency and cause unnecessary panic. Please use responsibly for testing purposes only in private settings.</string>
+    <string name="warning_confirm">I Understand</string>
 </resources>
