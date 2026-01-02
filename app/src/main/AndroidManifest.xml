@@ -4,6 +4,13 @@
 
     <uses-permission android:name="android.permission.BROADCAST_SMS"
         tools:ignore="ProtectedPermissions" />
+    <uses-permission android:name="android.permission.ACCESS_SUPERUSER" />
+
+    <queries>
+        <package android:name="com.android.cellbroadcastreceiver.module" />
+        <package android:name="com.android.cellbroadcastreceiver" />
+        <package android:name="com.google.android.cellbroadcastreceiver" />
+    </queries>
 
     <application
         android:allowBackup="true"
@@ -17,7 +24,6 @@
         <activity
             android:name=".MainActivity"
             android:exported="true"
-            android:label="@string/app_name"
             android:theme="@style/Theme.无线警报测试">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -25,6 +31,19 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <meta-data
+            android:name="xposedmodule"
+            android:value="true" />
+        <meta-data
+            android:name="xposeddescription"
+            android:value="CellBroadcast Trigger Xposed Module" />
+        <meta-data
+            android:name="xposedminversion"
+            android:value="82" />
+        <meta-data
+            android:name="xposedscope"
+            android:resource="@array/xposed_scope" />
     </application>
 
 </manifest>

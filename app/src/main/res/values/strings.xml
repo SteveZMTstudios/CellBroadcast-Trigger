@@ -2,7 +2,7 @@
     <string name="app_name">CellBroadcast Trigger</string>
     <string name="app_title">Wireless Emergency Alert Trigger</string>
     <string name="alert_message_label">Alert Message</string>
-    <string name="default_message">This is a test Emergency Alert</string>
+    <string name="default_message">[THIS IS A TEST 这是演习警报] This is a test Emergency Alert</string>
     <string name="alert_level_label">Alert Level:</string>
     <string name="delay_label">Delay (seconds)</string>
     <string name="trigger_button">TRIGGER ALERT (ROOT)</string>
@@ -27,4 +27,53 @@
     <string name="warning_title">Warning</string>
     <string name="warning_message">Triggering the distinctive alert tone from this test app in public places may be mistaken for a real emergency and cause unnecessary panic. Please use responsibly for testing purposes only in private settings.</string>
     <string name="warning_confirm">I Understand</string>
+
+    <string name="advanced_options">Advanced Options</string>
+    <string name="serial_number_label">Serial Number (0-65535)</string>
+    <string name="service_category_label">Service Category (Override)</string>
+    <string name="priority_label">Priority (0: Normal, 3: Emergency)</string>
+    <string name="geo_scope_label">Geo Scope (0: City, 3: Cell Wide)</string>
+    <string name="dcs_label">Data Coding Scheme (DCS)</string>
+    <string name="slot_index_label">SIM Slot Index (0 or 1)</string>
+    <string name="language_label">Language Code (e.g. en, zh, ja)</string>
+    
+    <string name="serial_number_desc">Unique ID for the alert message (0-65535). Changing this allows sending multiple distinct alerts.</string>
+    <string name="service_category_desc">Overrides the default category (e.g., 4352 for Earthquake). Leave empty to use default based on alert level.</string>
+    <string name="priority_desc">Message priority. 0=Normal, 3=Emergency (User Alert). Higher priority may interrupt user activities.</string>
+    <string name="geo_scope_desc">Geographical scope of the alert. 0=Cell-wide, 1=PLMN-wide, 2=Location Area, 3=Network-wide.</string>
+    <string name="dcs_desc">Encoding of the message. 0=GSM 7-bit default alphabet. Consult 3GPP TS 23.038 for others.</string>
+    <string name="slot_index_desc">Target SIM slot index (0 for SIM1, 1 for SIM2). Determines which subscription receives the broadcast.</string>
+    <string name="language_desc">ISO 639-1 language code (e.g., \'en\', \'zh\'). Used for data coding scheme auto-selection if DCS is 0.</string>
+
+    <string name="google_alerts_section">Google Play Services Alerts</string>
+    <string name="google_earthquake_button">Trigger Google Earthquake Demo</string>
+    <string name="google_earthquake_desc">Attempts to launch Google Play Services\' internal earthquake alert demo UI.</string>
+    
+    <string name="about_button">About</string>
+    <string name="about_title">About</string>
+    <string name="about_version">Version: %1$s</string>
+    <string name="about_repo">GitHub Repository</string>
+    <string name="about_report">Report Issue</string>
+    <string name="about_close">Close</string>
+    
+    <string name="root_error_title">Root Access Required</string>
+    <string name="root_error_message">This app requires a root manager (like Magisk/KernelSU) to trigger alerts via GUI.\n\nIf you only have ADB Root, please use the command line method described in README.</string>
+    <string name="root_error_confirm">OK</string>
+
+    <string name="xposed_error_title">Xposed Module Inactive</string>
+    <string name="xposed_error_message">This feature requires the Xposed module to be active.\n\nPlease enable this app in LSPosed/EdXposed Manager, ensure the scope includes "Google Play Services" (com.google.android.gms), and reboot your device.</string>
+    <string name="xposed_error_confirm">I Understand</string>
+
+    <string name="alert_params_title">Alert Parameters</string>
+    <string name="alert_params_desc">Configure simulated earthquake details injected into GMS EAlertUxArgs:\n\n• Region Name (field o): Displayed in alert title.\n• Lat/Lng (field b): Epicenter location.\n• Distance (field e): Simulated distance from epicenter.\n• Radius: Generates red/yellow polygon areas (field f/l).</string>
+    <string name="region_name_label">Region Name</string>
+    <string name="latitude_label">Latitude</string>
+    <string name="longitude_label">Longitude</string>
+    <string name="distance_label">Distance (km)</string>
+    <string name="magnitude_label">Magnitude</string>
+    <string name="polygon_radius_label">Damage Radius (km)</string>
+    <string name="alert_type_label">Alert Type (field n: 1=Action, 2=Aware)</string>
+    <string name="trigger_gms_xposed_button">Trigger GMS Alert (Xposed)</string>
+    <string name="xposed_required_hint">Requires Xposed module active in GMS scope.</string>
+    <string name="simulate_real_alert_label">Simulate Real Alert (No "Test" Label)</string>
 </resources>

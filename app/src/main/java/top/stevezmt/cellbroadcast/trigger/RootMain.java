@@ -10,6 +10,7 @@ import android.util.Base64;
 
 public class RootMain {
 
+    @SuppressWarnings("WrongConstant")
     public static void main(String[] args) {
         // Initialize Looper for the main thread to allow Handler creation
         android.os.Looper.prepare();
@@ -26,18 +27,16 @@ public class RootMain {
         }
 
         if (args.length < 3) {
-            System.err.println("Usage: RootMain <base64_body_text> <cmas_class_int> <delay_ms> [is_etws]");
+            System.err.println("Usage: RootMain <base64_body_text> <cmas_class_int> <delay_ms> <is_etws> [serial] [category] [priority] [scope] [dcs] [slot] [language]");
             return;
         }
 
         String body;
         try {
-            // Try to decode as Base64 first
             byte[] decodedBytes = Base64.decode(args[0], Base64.DEFAULT);
             body = new String(decodedBytes, "UTF-8");
             System.out.println("Decoded Base64 body: " + body);
         } catch (Exception e) {
-            // Fallback to raw string if decoding fails (for backward compatibility or manual testing)
             System.out.println("Failed to decode Base64, using raw string: " + e.getMessage());
             body = args[0];
         }
@@ -45,6 +44,15 @@ public class RootMain {
         int cmasClass = Integer.parseInt(args[1]);
         long delayMs = Long.parseLong(args[2]);
         boolean isEtws = args.length > 3 && Boolean.parseBoolean(args[3]);
+
+        // Advanced parameters
+        int serial = (args.length > 4) ? Integer.parseInt(args[4]) : 1234;
+        int category = (args.length > 5) ? Integer.parseInt(args[5]) : -1;
+        int priority = (args.length > 6) ? Integer.parseInt(args[6]) : 3;
+        int scope = (args.length > 7) ? Integer.parseInt(args[7]) : 3;
+        int dcs = (args.length > 8) ? Integer.parseInt(args[8]) : 0;
+        int slotIndex = (args.length > 9) ? Integer.parseInt(args[9]) : 0;
+        String language = (args.length > 10) ? args[10] : "en";
 
         if (delayMs > 0) {
             System.out.println("Waiting for " + delayMs + " ms...");
@@ -70,10 +78,9 @@ public class RootMain {
                 System.out.println("Broadcasting for subId: " + subId);
                 Object message;
                 if (isEtws) {
-                    // When isEtws is true, cmasClass argument is treated as etwsType
-                    message = createEtwsMessage(body, cmasClass, subId);
+                    message = createEtwsMessage(body, cmasClass, subId, serial, scope, dcs, language);
                 } else {
-                    message = createSmsCbMessage(body, cmasClass, subId);
+                    message = createSmsCbMessage(body, cmasClass, subId, serial, category, priority, scope, dcs, slotIndex, language);
                 }
                 
                 Intent intent = new Intent("android.provider.Telephony.SMS_CB_RECEIVED");
@@ -89,7 +96,8 @@ public class RootMain {
                 String[] packages = {
                     "com.android.cellbroadcastreceiver",
                     "com.android.cellbroadcastreceiver.module",
-                    "com.google.android.cellbroadcastreceiver"
+                    "com.google.android.cellbroadcastreceiver",
+                    "com.google.android.gms" // Target Google Play Services explicitly
                 };
 
                 for (String pkg : packages) {
@@ -113,8 +121,13 @@ public class RootMain {
     private static int[] getActiveSubscriptionIds(Context context) {
         try {
             Class<?> subMgrClass = Class.forName("android.telephony.SubscriptionManager");
-            Method from = subMgrClass.getMethod("from", Context.class);
-            Object subMgr = from.invoke(null, context);
+            Object subMgr;
+            if (android.os.Build.VERSION.SDK_INT >= 31) {
+                subMgr = context.getSystemService(subMgrClass);
+            } else {
+                Method from = subMgrClass.getMethod("from", Context.class);
+                subMgr = from.invoke(null, context);
+            }
             
             Method getActiveSubInfoList = subMgrClass.getMethod("getActiveSubscriptionIdList");
             return (int[]) getActiveSubInfoList.invoke(subMgr);
@@ -159,7 +172,7 @@ public class RootMain {
         }
     }
 
-    private static Object createSmsCbMessage(String body, int cmasMessageClass, int subId) throws Exception {
+    private static Object createSmsCbMessage(String body, int cmasMessageClass, int subId, int serial, int customCategory, int priority, int scope, int dcs, int slotIndex, String language) throws Exception {
         // 1. Create SmsCbLocation
         Class<?> locClass = Class.forName("android.telephony.SmsCbLocation");
         Object location;
@@ -167,8 +180,7 @@ public class RootMain {
             Constructor<?> locConstructor = locClass.getConstructor(String.class, int.class, int.class);
             location = locConstructor.newInstance("", -1, -1);
         } catch (NoSuchMethodException e) {
-             // Fallback for very old versions if needed, or just try default
-             location = locClass.newInstance();
+             location = locClass.getDeclaredConstructor().newInstance();
         }
 
         // 2. Create SmsCbCmasInfo
@@ -176,19 +188,12 @@ public class RootMain {
         Constructor<?> cmasConstructor = cmasClass.getConstructor(
                 int.class, int.class, int.class, int.class, int.class, int.class);
         
-        // CMAS Constants - Map based on cmasMessageClass
-        // 0x00: Presidential
-        // 0x01: Extreme
-        // 0x02: Severe
-        // 0x03: Amber
-        // 0x04: Test
-        
-        int category = 0; // CMAS_CATEGORY_GEO
-        int responseType = 0; // CMAS_RESPONSE_TYPE_PREPARE
-        int severity = 0; // CMAS_SEVERITY_EXTREME
-        int urgency = 0; // CMAS_URGENCY_IMMEDIATE
-        int certainty = 0; // CMAS_CERTAINTY_OBSERVED
-        int serviceCategory = 4370; // CMAS Presidential
+        int category = 0; 
+        int responseType = 0; 
+        int severity = 0; 
+        int urgency = 0; 
+        int certainty = 0; 
+        int serviceCategory = 4370; 
 
         switch (cmasMessageClass) {
             case 0x00: // Presidential
@@ -197,27 +202,29 @@ public class RootMain {
                 urgency = 0; // Immediate
                 break;
             case 0x01: // Extreme
-                serviceCategory = 4371; // CMAS Extreme
+                serviceCategory = 4371; 
                 severity = 0; // Extreme
                 urgency = 0; // Immediate
                 break;
             case 0x02: // Severe
-                serviceCategory = 4373; // CMAS Severe
+                serviceCategory = 4373; 
                 severity = 1; // Severe
                 urgency = 1; // Expected
                 break;
             case 0x03: // Amber
-                serviceCategory = 4379; // CMAS Amber
-                category = 1; // CMAS_CATEGORY_CBRNE (Often used for Amber? Or just rely on service category)
-                // Actually Amber is usually 4379
+                serviceCategory = 4379; 
                 severity = 1; // Severe
                 urgency = 1; // Expected
                 break;
-            case 0x04: // Test
-                serviceCategory = 4383; // CMAS Test
-                severity = 1;
-                urgency = 1;
+            case 0x04: // Test (Required Monthly Test)
+                serviceCategory = 4383; 
+                severity = 0; // Extreme (Some carriers use Extreme for RMT to ensure delivery)
+                urgency = 0; // Immediate
                 break;
+        }
+        
+        if (customCategory != -1) {
+            serviceCategory = customCategory;
         }
         
         Object cmasInfo = cmasConstructor.newInstance(cmasMessageClass, category, responseType, severity, urgency, certainty);
@@ -225,7 +232,7 @@ public class RootMain {
         // 3. Create SmsCbMessage
         Class<?> msgClass = Class.forName("android.telephony.SmsCbMessage");
         
-        System.out.println("Creating CMAS message for Subscription ID: " + subId + ", Category: " + serviceCategory);
+        System.out.println("Creating CMAS message for SubId: " + subId + ", Category: " + serviceCategory + ", Serial: " + serial + ", Lang: " + language);
 
         try {
             // Try newer constructor (Android 12+)
@@ -238,20 +245,20 @@ public class RootMain {
 
             return msgConstructor.newInstance(
                     1, // MESSAGE_FORMAT_3GPP
-                    3, // GEOGRAPHICAL_SCOPE_CELL_WIDE
-                    1234, // Serial Number
+                    scope, 
+                    serial, 
                     location,
                     serviceCategory, 
-                    "en",
-                    0, // Data Coding Scheme (7-bit)
+                    language, 
+                    dcs, 
                     body,
-                    3, // MESSAGE_PRIORITY_EMERGENCY
+                    priority, 
                     null, // No ETWS info
                     cmasInfo,
                     0, // maximumWaitTimeSec
                     null, // geometries
                     System.currentTimeMillis(), // receivedTimeMillis
-                    0, // Slot 0
+                    slotIndex, 
                     subId // SubId
             );
         } catch (NoSuchMethodException e) {
@@ -267,13 +274,13 @@ public class RootMain {
 
                 return msgConstructor.newInstance(
                         1, // MESSAGE_FORMAT_3GPP
-                        3, // GEOGRAPHICAL_SCOPE_CELL_WIDE
-                        1234, // Serial Number
+                        scope, 
+                        serial, 
                         location,
                         serviceCategory, 
-                        "en",
+                        language,
                         body,
-                        3, // MESSAGE_PRIORITY_EMERGENCY
+                        priority, 
                         null, // No ETWS info
                         cmasInfo
                 );
@@ -285,7 +292,7 @@ public class RootMain {
         }
     }
 
-    private static Object createEtwsMessage(String body, int etwsType, int subId) throws Exception {
+    private static Object createEtwsMessage(String body, int etwsType, int subId, int serial, int scope, int dcs, String language) throws Exception {
         // 1. Create SmsCbLocation
         Class<?> locClass = Class.forName("android.telephony.SmsCbLocation");
         Object location;
@@ -293,18 +300,16 @@ public class RootMain {
             Constructor<?> locConstructor = locClass.getConstructor(String.class, int.class, int.class);
             location = locConstructor.newInstance("", -1, -1);
         } catch (NoSuchMethodException e) {
-             location = locClass.newInstance();
+             location = locClass.getDeclaredConstructor().newInstance();
         }
 
         // 2. Create SmsCbEtwsInfo
         Class<?> etwsClass = Class.forName("android.telephony.SmsCbEtwsInfo");
-        // Constructor: int warningType, boolean emergencyUserAlert, boolean activatePopup, boolean primary, byte[] warningSecurityInformation
         Constructor<?> etwsConstructor = etwsClass.getConstructor(
                 int.class, boolean.class, boolean.class, boolean.class, byte[].class);
         
-        // ETWS Constants
-        int warningType = 0; // ETWS_WARNING_TYPE_EARTHQUAKE
-        int serviceCategory = 4352; // ETWS Earthquake
+        int warningType = 0; 
+        int serviceCategory = 4352; 
 
         switch (etwsType) {
             case 0: // Earthquake
@@ -338,7 +343,7 @@ public class RootMain {
         // 3. Create SmsCbMessage
         Class<?> msgClass = Class.forName("android.telephony.SmsCbMessage");
         
-        System.out.println("Creating ETWS message for Subscription ID: " + subId + ", Type: " + etwsType);
+        System.out.println("Creating ETWS message for SubId: " + subId + ", Type: " + etwsType + ", Serial: " + serial + ", Lang: " + language);
 
         try {
             // Try newer constructor (Android 12+)
@@ -351,12 +356,12 @@ public class RootMain {
 
             return msgConstructor.newInstance(
                     1, // MESSAGE_FORMAT_3GPP
-                    3, // GEOGRAPHICAL_SCOPE_CELL_WIDE
-                    1234, // Serial Number
+                    scope, 
+                    serial, 
                     location,
                     serviceCategory, 
-                    "en",
-                    0, // Data Coding Scheme (7-bit)
+                    language,
+                    dcs, 
                     body,
                     3, // MESSAGE_PRIORITY_EMERGENCY
                     etwsInfo,
@@ -379,11 +384,11 @@ public class RootMain {
 
                 return msgConstructor.newInstance(
                         1, // MESSAGE_FORMAT_3GPP
-                        3, // GEOGRAPHICAL_SCOPE_CELL_WIDE
-                        1234, // Serial Number
+                        scope, 
+                        serial, 
                         location,
                         serviceCategory, 
-                        "en",
+                        language,
                         body,
                         3, // MESSAGE_PRIORITY_EMERGENCY
                         etwsInfo,

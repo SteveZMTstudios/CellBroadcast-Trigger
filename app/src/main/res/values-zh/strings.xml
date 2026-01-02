@@ -3,7 +3,7 @@
     <string name="app_name">无线警报测试</string>
     <string name="app_title">无线紧急警报触发器</string>
     <string name="alert_message_label">警报内容</string>
-    <string name="default_message">这是一条测试紧急警报</string>
+    <string name="default_message">[THIS IS A TEST 这是演习警报] 这是一条测试紧急警报</string>
     <string name="alert_level_label">警报等级：</string>
     <string name="delay_label">延迟 (秒)</string>
     <string name="trigger_button">触发警报 (ROOT)</string>
@@ -28,4 +28,53 @@
     <string name="warning_title">警告</string>
     <string name="warning_message">在公共场所触发此测试应用的特殊提示音，可能被误认为真实紧急情况并引发不必要的恐慌。请务必仅在私人环境中负责任地使用。</string>
     <string name="warning_confirm">我已知晓</string>
+
+    <string name="advanced_options">高级选项</string>
+    <string name="serial_number_label">序列号 (0-65535)</string>
+    <string name="service_category_label">服务类别 (覆盖默认值)</string>
+    <string name="priority_label">优先级 (0: 普通, 3: 紧急)</string>
+    <string name="geo_scope_label">地理范围 (0: 城市, 3: 基站)</string>
+    <string name="dcs_label">数据编码方案 (DCS)</string>
+    <string name="slot_index_label">SIM 卡槽索引 (0 或 1)</string>
+    <string name="language_label">语言代码 (例如 zh, en, ja)</string>
+
+    <string name="serial_number_desc">警报消息的唯一 ID (0-65535)。更改此值可发送多条不同的警报。</string>
+    <string name="service_category_desc">覆盖默认的服务类别 (例如 4352 代表地震)。留空则根据警报等级自动选择。</string>
+    <string name="priority_desc">消息优先级。0=普通，3=紧急 (用户警报)。高优先级可能会打断用户操作。</string>
+    <string name="geo_scope_desc">警报的地理范围。0=小区级，1=PLMN级，2=位置区域级，3=全网级。</string>
+    <string name="dcs_desc">消息编码方案。0=GSM 7-bit 默认字母表。其他值请参考 3GPP TS 23.038。</string>
+    <string name="slot_index_desc">目标 SIM 卡槽索引 (0 为卡1，1 为卡2)。决定哪个订阅接收广播。</string>
+    <string name="language_desc">ISO 639-1 语言代码 (如 \'zh\', \'en\')。如果 DCS 为 0，则用于自动选择编码方案。</string>
+
+    <string name="google_alerts_section">Google Play 服务警报</string>
+    <string name="google_earthquake_button">触发 Google 地震预警演示</string>
+    <string name="google_earthquake_desc">尝试启动 Google Play 服务内置的地震预警演示界面。</string>
+    
+    <string name="about_button">关于</string>
+    <string name="about_title">关于</string>
+    <string name="about_version">版本: %1$s</string>
+    <string name="about_repo">GitHub 仓库</string>
+    <string name="about_report">报告问题</string>
+    <string name="about_close">关闭</string>
+    
+    <string name="root_error_title">需要 Root 权限</string>
+    <string name="root_error_message">此应用需要 Root 管理器 (如 Magisk/KernelSU) 才能通过界面触发警报。\n\n如果您只有 ADB Root 权限，请使用 README 中说明的命令行方法。</string>
+    <string name="root_error_confirm">确定</string>
+
+    <string name="xposed_error_title">Xposed 模块未激活</string>
+    <string name="xposed_error_message">此功能需要激活 Xposed 模块才能工作。\n\n请在 LSPosed/EdXposed 管理器中勾选本应用，并确保作用域包含 "Google Play 服务" (com.google.android.gms)，然后重启手机。</string>
+    <string name="xposed_error_confirm">我知道了</string>
+
+    <string name="alert_params_title">警报参数配置</string>
+    <string name="alert_params_desc">配置模拟地震的详细参数，这些值将直接注入到 GMS 的 EAlertUxArgs 对象中：\n\n• 地区名称 (字段 o)：显示在警报标题中。\n• 经纬度 (字段 b)：设定震中位置。\n• 距离 (字段 e)：模拟设备与震中的距离。\n• 震感半径：用于生成地图上的红色/黄色多边形区域 (字段 f/l)。</string>
+    <string name="region_name_label">地区名称 (Region Name)</string>
+    <string name="latitude_label">震中纬度 (Latitude)</string>
+    <string name="longitude_label">震中经度 (Longitude)</string>
+    <string name="distance_label">距震中距离 (km)</string>
+    <string name="magnitude_label">震级 (Magnitude)</string>
+    <string name="polygon_radius_label">震感半径 (km)</string>
+    <string name="alert_type_label">警报类型 (字段 n: 1=行动, 2=注意)</string>
+    <string name="trigger_gms_xposed_button">触发 GMS 警报 (Xposed)</string>
+    <string name="xposed_required_hint">需要在 GMS (Google Play 服务) 作用域内激活 Xposed 模块。</string>
+    <string name="simulate_real_alert_label">模拟真实警报 (去除"演习"标识)</string>
 </resources>

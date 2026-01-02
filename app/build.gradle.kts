@@ -12,8 +12,8 @@ android {
         applicationId = "top.stevezmt.cellbroadcast.trigger"
         minSdk = 21
         targetSdk = 36
-        versionCode = 3
-        versionName = "1.0.0"
+        versionCode = 40
+        versionName = "1.1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -46,6 +46,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 }
 
@@ -66,4 +67,5 @@ dependencies {
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
     debugImplementation(libs.androidx.compose.ui.tooling)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
+    compileOnly(libs.xposed.api)
 }

@@ -51,6 +51,8 @@ Or build the release package:
 
 ## Usage Instructions
 
+For detailed test cases and troubleshooting, see the [Testing Guide](TESTING.md).
+
 ### Prerequisites
 
 * Your Android device must **have root access** (Magisk, KernelSU, APatch, etc.).
@@ -71,38 +73,74 @@ Or build the release package:
 
 6. Observe whether the phone displays a system-level alert pop-up.
 
-### ADB Command Line Usage
+### Google Play Services (GMS) Earthquake Alerts (Xposed)
 
-You can also directly call the underlying logic of this application through ADB, suitable for automated testing.
+This app includes a specialized module to trigger Google's internal Earthquake Alert UI.
 
-**Basic Format:**
+1. **Prerequisites**:
+   - **LSPosed/EdXposed** installed.
+   - Enable this app in the Xposed manager.
+   - **Scope**: Ensure "Google Play Services" (`com.google.android.gms`) is selected in the scope.
+   - Reboot your device.
 
+2. **Usage**:
+   - Expand the **"Google Play Services Alerts"** section.
+   - Configure parameters:
+     - **Region Name**: The city/region shown in the alert title.
+     - **Epicenter (Lat/Lng)**: The simulated location of the earthquake.
+     - **Distance**: Your simulated distance from the epicenter (affects the "Estimated Time of Arrival").
+     - **Damage Radius**: Controls the size of the red/yellow intensity polygons on the map.
+     - **Alert Type**: `1` for "Take Action" (Strong), `2` for "Be Aware" (Weak).
+   - Check **"Simulate Real Alert"** to remove the "Test" prefix from the UI.
+   - Click **"Trigger GMS Alert (Xposed)"**.
+
+### Advanced Options
+
+You can fine-tune the low-level CellBroadcast parameters:
+- **Serial Number**: Unique ID for the message. Changing this allows the system to treat it as a new alert.
+- **Service Category**: Override the 3GPP service category (e.g., 4352 for Earthquake).
+- **Priority**: Message priority (0-3).
+- **Geo Scope**: Geographical scope (Cell-wide, PLMN-wide, etc.).
+- **DCS**: Data Coding Scheme for character encoding.
+- **Slot Index**: Target SIM slot (0 for SIM1, 1 for SIM2).
+
+### ADB Command Line Usage (For ADB Root only)
+If you cannot grant root via GUI (e.g., you only have `adb root`), use the following steps. For Windows compatibility, it is recommended to use variables:
+
+1. **Get APK path and store in variable**:
+   ```bash
+   # Windows (PowerShell)
+   $APK_PATH = adb shell "pm path top.stevezmt.cellbroadcast.trigger | cut -d: -f2"
+   
+   # Linux / macOS
+   APK_PATH=$(adb shell "pm path top.stevezmt.cellbroadcast.trigger | cut -d: -f2")
+   ```
+
+2. **Execute trigger command**:
+   ```bash
+   # Format: adb shell "CLASSPATH=$APK_PATH app_process /system/bin top.stevezmt.cellbroadcast.trigger.RootMain <Base64> <type> <delay> <isEtws> <serial> <category> <priority> <scope> <dcs> <slot> <lang>"
+   
+   # Example: Earthquake alert with serial 1234 and priority 3
+   adb shell "CLASSPATH=$APK_PATH app_process /system/bin top.stevezmt.cellbroadcast.trigger.RootMain '5Zyw6ZyH6aKE6K2m' 0 0 true 1234 -1 3 3 0 0 'zh'"
+   ```
+
+**Parameter Description (In order):**
+1. `Base64 content`: UTF-8 string encoded in Base64.
+2. `Type Code`: CMAS (0-4) or ETWS (0-4).
+3. `Delay ms`: 0 for immediate.
+4. `isEtws`: `true` or `false`.
+5. `Serial`: 0-65535 (default 1234).
+6. `Category`: Override value (default -1).
+7. `Priority`: 0-3 (default 3).
+8. `Geo Scope`: 0-3 (default 3).
+9. `DCS`: Data Coding Scheme (default 0).
+10. `Slot Index`: 0 or 1.
+11. `Language`: e.g., 'zh' or 'en'.
+
+### ADB Command Line Usage (Legacy Simple Format)
+If you don't need advanced options:
 ```bash
-adb shell "CLASSPATH=\$(pm path top.stevezmt.cellbroadcast.trigger | cut -d: -f2) app_process /system/bin top.stevezmt.cellbroadcast.trigger.RootMain '<Base64 encoded message content>' <type code> <delay in milliseconds> <whether ETWS>"
-
-```
-
-**Parameter Description:**
-
-* `Base64 encoded message content`: Converts the string to a UTF-8 Base64 string (to prevent garbled characters).
-
-* **Type Code:**
-
-**CMAS (isEtws=false)**: 0=Presidential, 1=Extreme, 2=Severe, 3=Amber, 4=Test
-
-**ETWS (isEtws=true)**: 0=Earthquake, 1=Tsunami, 2=Quake+Tsunami, 3=Test, 4=Other
-
-* **Delay in milliseconds:** Integer, 0 indicates immediate transmission.
-
-* **ETWS Status:** `true` or `false`.
-
-**Example: Sending an ETWS alert with the Chinese characters "地震预警" (earthquake warning)**
-
-(The Base64 encoding of "地震预警" is `5Zyw6ZyH6aKE6K2m`)
-
-```bash
-adb shell "CLASSPATH=\$(pm path top.stevezmt.cellbroadcast.trigger | cut -d: -f2) app_process /system/bin top.stevezmt.cellbroadcast.trigger.RootMain '5Zyw6ZyH6aKE6K2m' 0 0 true"
-
+adb shell "CLASSPATH=$APK_PATH app_process /system/bin top.stevezmt.cellbroadcast.trigger.RootMain '<Base64>' <type> <delay> <isEtws>"
 ```
 
 ## Disclaimer
