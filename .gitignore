@@ -17,3 +17,5 @@ local.properties
 
 # debug
 gms/
+.kotlin/errors/errors-*.log
+.vscode/settings.json

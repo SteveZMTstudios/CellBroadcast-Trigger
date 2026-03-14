@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">无线警报测试</string>
+    <string name="xposed_module_description">GMS 地震预警注入模块。启用以触发 GMS 警报。</string>
     <string name="app_title">无线紧急警报触发器</string>
     <string name="alert_message_label">警报内容</string>
-    <string name="default_message">[THIS IS A TEST 这是演习警报] 这是一条测试紧急警报</string>
+    <string name="default_message">[THIS IS A TEST 这是演习警报] 这是一条测试紧急警报 应急电话112，测试省地震局 02112345678，example.com [测试警报]</string>
     <string name="alert_level_label">警报等级：</string>
-    <string name="delay_label">延迟 (秒)</string>
+    <string name="delay_label">执行前等待 (秒)</string>
     <string name="trigger_button">触发警报 (ROOT)</string>
     <string name="settings_button">打开 WEA 设置</string>
     <string name="copy_logs_button">复制日志</string>
@@ -63,7 +64,7 @@
     <string name="root_error_confirm">确定</string>
 
     <string name="xposed_error_title">Xposed 模块未激活</string>
-    <string name="xposed_error_message">此功能需要激活 Xposed 模块才能工作。\n\n请在 LSPosed/EdXposed 管理器中勾选本应用，并确保作用域包含 "Google Play 服务" (com.google.android.gms)，然后重启手机。</string>
+    <string name="xposed_error_message">此功能需要激活 Xposed 模块才能工作。\n\n请在 Xposed 管理器中勾选本应用，并将作用域仅设置为 "Google Play 服务" (com.google.android.gms)，然后重启手机。</string>
     <string name="xposed_error_confirm">确定</string>
 
     <string name="alert_params_title">警报参数配置</string>
@@ -76,13 +77,13 @@
     <string name="polygon_radius_label">震感半径 (km)</string>
     <string name="alert_type_label">警报类型 (字段 n: 1=行动, 2=注意)</string>
     <string name="trigger_gms_xposed_button">触发 GMS 警报 (Xposed)</string>
-    <string name="xposed_required_hint">需要在 GMS (Google Play 服务) 作用域内激活 Xposed 模块。</string>
+    <string name="xposed_required_hint">仅需在 Google Play 服务 (GMS) 作用域内激活 Xposed 模块。</string>
     <string name="simulate_real_alert_label">模拟真实警报 (去除"演习"标识)</string>
     <string name="confirm_trigger_title">确认触发</string>
     <string name="confirm_trigger_message">您即将触发紧急警报。这会播放响亮且独特的警报音效。\n\n请确保：\n1. 您处于私人环境中。\n2. 周围的人已知晓这是在进行测试。</string>
     <string name="confirm_trigger_button">确认并触发</string>
     <string name="confirm_trigger_cancel">取消</string>
-    <string name="full_simulation_button">全系统模拟 (WEA + ETWS + GMS)</string>
+    <string name="full_simulation_button">全量模拟 (WEA + ETWS + GMS)</string>
     <string name="full_simulation_desc">模拟真实地震发生时，多个预警系统同时触发的情景。将同时发送无线紧急警报 (WEA)、地震海啸警报 (ETWS) 和 Google 地震预警。</string>
     <string name="full_simulation_message">[测试警报]【紧急地震预警】测试省测试县测试乡将于1970年1月1日7时0分发生6.8级地震，震源深度20公里，震中37.7749°N、-122.4194°E，震感半径100km。室内伏地、遮挡、手抓牢，躲于桌下或墙角，远离窗户和重物；户外前往空旷处，远离高楼、电线杆、广告牌。应急电话112，测试省地震局 02112345678，example.com [测试警报]</string>
 </resources>

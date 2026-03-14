@@ -1,8 +1,9 @@
 <resources>
     <string name="app_name">CellBroadcast Trigger</string>
+    <string name="xposed_module_description">GMS earthquake alert injector. Activate this to trigger GMS alerts.</string>
     <string name="app_title">WEA Trigger</string>
     <string name="alert_message_label">Alert Message</string>
-    <string name="default_message">[THIS IS A TEST] This is a test Emergency Alert</string>
+    <string name="default_message">[THIS IS A TEST] This is a test Emergency Alert. Emergency contact: 112, Test Seismological Bureau 12345678, example.com [Test Alert]</string>
     <string name="alert_level_label">Alert Level:</string>
     <string name="delay_label">Delay (seconds)</string>
     <string name="trigger_button">TRIGGER ALERT (ROOT)</string>
@@ -62,7 +63,7 @@
     <string name="root_error_confirm">OK</string>
 
     <string name="xposed_error_title">Xposed Module Inactive</string>
-    <string name="xposed_error_message">This feature requires the Xposed module to be active.\n\nPlease enable this app in LSPosed/EdXposed Manager, ensure the scope includes "Google Play Services" (com.google.android.gms), and reboot your device.</string>
+    <string name="xposed_error_message">This feature requires the Xposed module to be active.\n\nPlease enable this app in Xposed Manager, set scope to only "Google Play Services" (com.google.android.gms), and reboot your device.</string>
     <string name="xposed_error_confirm">I Understand</string>
 
     <string name="alert_params_title">Alert Parameters</string>
@@ -75,7 +76,7 @@
     <string name="polygon_radius_label">Damage Radius (km)</string>
     <string name="alert_type_label">Alert Type (field n: 1=Action, 2=Aware)</string>
     <string name="trigger_gms_xposed_button">Trigger GMS Alert (Xposed)</string>
-    <string name="xposed_required_hint">Requires Xposed module active in GMS scope.</string>
+    <string name="xposed_required_hint">Requires Xposed module active in Google Play Services scope only.</string>
     <string name="simulate_real_alert_label">Simulate Real Alert (No "Test" Label)</string>
     <string name="confirm_trigger_title">Confirm</string>
     <string name="confirm_trigger_message">You are about to trigger a simulated emergency alert. This will play a loud, distinctive alert tone.\n\nPlease ensure:\n1. You are in a private environment.\n2. People around you are aware that this is a test.</string>

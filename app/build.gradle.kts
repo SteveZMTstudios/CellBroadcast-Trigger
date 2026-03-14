@@ -12,8 +12,8 @@ android {
         applicationId = "top.stevezmt.cellbroadcast.trigger"
         minSdk = 21
         targetSdk = 36
-        versionCode = 50
-        versionName = "1.1.2"
+        versionCode = 60
+        versionName = "1.1.3"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }

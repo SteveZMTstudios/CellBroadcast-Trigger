@@ -432,6 +432,10 @@ fun MainScreen(modifier: Modifier = Modifier) {
                     
                     Button(
                         onClick = {
+                            if (!isXposedActive) {
+                                showXposedErrorDialog = true
+                                return@Button
+                            }
                             pendingTriggerAction = {
                                 scope.launch {
                                     logs += "Launching Google Earthquake Demo (via Xposed)...\n"
@@ -458,15 +462,7 @@ fun MainScreen(modifier: Modifier = Modifier) {
                     Button(
                         onClick = {
                             scope.launch {
-                                logs += "Launching GMS Earthquake Settings...\n"
-                                withContext(Dispatchers.IO) {
-                                    try {
-                                        val cmd = "am start -n com.google.android.gms/com.google.android.location.settings.EAlertSettingsActivity"
-                                        Runtime.getRuntime().exec(arrayOf("su", "-c", cmd)).waitFor()
-                                    } catch (e: Exception) {
-                                        withContext(Dispatchers.Main) { logs += "Failed: ${e.message}\n" }
-                                    }
-                                }
+                                openGmsEarthquakeSettings(context) { logs += it }
                             }
                         },
                         modifier = Modifier.fillMaxWidth()
@@ -741,6 +737,66 @@ fun MainScreen(modifier: Modifier = Modifier) {
                 .padding(8.dp)
                 .verticalScroll(rememberScrollState()) // Make logs scrollable independently
         )
+    }
+}
+
+suspend fun openGmsEarthquakeSettings(context: android.content.Context, onLog: (String) -> Unit) {
+    onLog("Launching GMS Earthquake Settings...\n")
+
+    // Try direct intents first (may work on some builds/ROMs).
+    val directIntents = listOf(
+        android.content.Intent("com.google.android.location.settings.EALERT_SETTINGS").setPackage("com.google.android.gms"),
+        android.content.Intent("com.google.android.location.settings.EALERT_GOOGLE_SETTING_DEBUG").setPackage("com.google.android.gms")
+    )
+
+    for (intent in directIntents) {
+        try {
+            intent.addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK)
+            context.startActivity(intent)
+            onLog("Opened GMS settings via action: ${intent.action}\n")
+            return
+        } catch (_: Exception) {
+            // Continue to root fallback.
+        }
+    }
+
+    // Root fallback for non-exported GMS activities.
+    withContext(Dispatchers.IO) {
+        val commands = listOf(
+            "am start -a com.google.android.location.settings.EALERT_SETTINGS",
+            "am start -a com.google.android.location.settings.EALERT_GOOGLE_SETTING_DEBUG",
+            "am start -n com.google.android.gms/com.google.android.location.settings.EAlertSettingsV31Activity",
+            "am start -n com.google.android.gms/com.google.android.location.settings.EAlertSettingsActivity",
+            "am start -n com.google.android.gms/com.google.android.location.settings.EAlertGoogleSettingDebugActivity"
+        )
+
+        var success = false
+        for (cmd in commands) {
+            try {
+                val process = Runtime.getRuntime().exec("su")
+                val os = java.io.DataOutputStream(process.outputStream)
+                os.writeBytes(cmd + "\n")
+                os.writeBytes("exit\n")
+                os.flush()
+                process.waitFor()
+                val code = process.exitValue()
+                withContext(Dispatchers.Main) { onLog("Tried: $cmd (exit=$code)\n") }
+                if (code == 0) {
+                    success = true
+                    break
+                }
+            } catch (e: Exception) {
+                withContext(Dispatchers.Main) { onLog("Command failed: $cmd (${e.message})\n") }
+            }
+        }
+
+        withContext(Dispatchers.Main) {
+            if (success) {
+                onLog("GMS earthquake settings opened successfully.\n")
+            } else {
+                onLog("Failed to open GMS earthquake settings on this build.\n")
+            }
+        }
     }
 }
 
